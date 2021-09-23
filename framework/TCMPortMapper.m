@@ -74,8 +74,9 @@ enum {
 }
 @end
 
+typedef void (^ TCMCompletionBlock)(BOOL success);
 
-@implementation TCMPortMapping 
+@implementation TCMPortMapping
 
 + (instancetype)portMappingWithLocalPort:(uint16_t)privatePort desiredExternalPort:(uint16_t)publicPort transportProtocol:(TCMPortMappingTransportProtocol)transportProtocol userInfo:(id)userInfo {
 
@@ -126,6 +127,8 @@ enum {
     BOOL _refreshIsScheduled;
     
     NSMutableSet *_systemConfigurationObservations;
+    
+    TCMCompletionBlock _completionBlock;
 }
 
 @property (nonatomic, strong, readwrite) NSString *externalIPAddress;
@@ -315,8 +318,10 @@ static TCMPortMapper *S_sharedInstance;
     }
 }
 
-- (void)addPortMapping:(TCMPortMapping *)aMapping {
+- (void)addPortMapping:(TCMPortMapping *)aMapping completion:(void (^)(BOOL))completionBlock {
     @synchronized(_portMappings) {
+        _completionBlock = completionBlock;
+        
         if (aMapping.mappingStatus != TCMPortMappingStatusUnmapped &&
             ![_portMappings containsObject:aMapping]) {
             [aMapping setMappingStatus:TCMPortMappingStatusUnmapped];
@@ -326,8 +331,10 @@ static TCMPortMapper *S_sharedInstance;
     [self updatePortMappings];
 }
 
-- (void)removePortMapping:(TCMPortMapping *)aMapping {
+- (void)removePortMapping:(TCMPortMapping *)aMapping completion:(void (^)(BOOL))completionBlock {
     if (aMapping) {
+        _completionBlock = completionBlock;
+        
         __autoreleasing TCMPortMapping *mapping = aMapping;
         @synchronized(_portMappings) {
             [_portMappings removeObject:mapping];
@@ -778,6 +785,10 @@ static TCMPortMapper *S_sharedInstance;
         }
     
         [[NSNotificationCenter defaultCenter] postNotificationName:TCMPortMapperDidFinishWorkNotification object:self];
+        
+        if (_completionBlock) {
+            _completionBlock(YES);
+        }
     }
 }
 
