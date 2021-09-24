@@ -80,7 +80,7 @@ typedef void (^ TCMCompletionBlock)(BOOL success);
 
 + (instancetype)portMappingWithLocalPort:(uint16_t)privatePort desiredExternalPort:(uint16_t)publicPort transportProtocol:(TCMPortMappingTransportProtocol)transportProtocol userInfo:(id)userInfo {
 
-    NSAssert(privatePort>0 && publicPort>0, @"Port number has to be between 1 and 65535");
+    NSAssert(privatePort>=0 && publicPort>=0, @"Port number has to be between 0 and 65535");
     return [[self alloc] initWithLocalPort:privatePort desiredExternalPort:publicPort transportProtocol:transportProtocol userInfo:userInfo];
 }
 
