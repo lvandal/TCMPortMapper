@@ -70,8 +70,8 @@ typedef NS_ENUM(uint8_t, TCMPortMappingTransportProtocol)  {
 
 - (NSSet *)portMappings;
 - (NSMutableSet *)removeMappingQueue;
-- (void)addPortMapping:(TCMPortMapping *)aMapping completion:(void (^ __nullable)(BOOL))completionBlock;
-- (void)removePortMapping:(TCMPortMapping *)aMapping completion:(void (^ __nullable)(BOOL))completionBlock;
+- (void)addPortMapping:(TCMPortMapping *)aMapping completion:(void (^ __nullable)(void))completionBlock;
+- (void)removePortMapping:(TCMPortMapping *)aMapping completion:(void (^ __nullable)(void))completionBlock;
 - (void)refresh;
 
 - (BOOL)isAtWork;

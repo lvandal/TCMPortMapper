@@ -74,7 +74,7 @@ enum {
 }
 @end
 
-typedef void (^ TCMCompletionBlock)(BOOL success);
+typedef void (^ TCMCompletionBlock)(void);
 
 @implementation TCMPortMapping
 
@@ -318,7 +318,7 @@ static TCMPortMapper *S_sharedInstance;
     }
 }
 
-- (void)addPortMapping:(TCMPortMapping *)aMapping completion:(void (^)(BOOL))completionBlock {
+- (void)addPortMapping:(TCMPortMapping *)aMapping completion:(void (^)(void))completionBlock {
     @synchronized(_portMappings) {
         _completionBlock = completionBlock;
         
@@ -331,7 +331,7 @@ static TCMPortMapper *S_sharedInstance;
     [self updatePortMappings];
 }
 
-- (void)removePortMapping:(TCMPortMapping *)aMapping completion:(void (^)(BOOL))completionBlock {
+- (void)removePortMapping:(TCMPortMapping *)aMapping completion:(void (^)(void))completionBlock {
     if (aMapping) {
         _completionBlock = completionBlock;
         
@@ -787,7 +787,7 @@ static TCMPortMapper *S_sharedInstance;
         [[NSNotificationCenter defaultCenter] postNotificationName:TCMPortMapperDidFinishWorkNotification object:self];
         
         if (_completionBlock) {
-            _completionBlock(YES);
+            _completionBlock();
         }
     }
 }
